@@ -20,3 +20,11 @@ Currently no real functionality exists in these apps, but as as this version is 
 # Moving Towards a Generic System
 
 I would love if "LCARS" could stick and this project could take off, but while fan projects are fine, I'm sure someone would try to issue a DMCA takedown request if the project got too big. So in time the "LCARS" theme may be abandoned. However, this possibility also will motivate the creation of more themes, and having a theme library would be great!
+
+# Related Projects
+
+## GopherAI
+
+Having an interactive system that creates a more complete application environment for a lareg language model based assistant like ChatGPT is only part of the puzzel of building the next generation of internet technologies. There are a lot of different large language model designs available, and it's possible to create custom models. Assistants that work with these models are also very good with natural language information. So why rely on internet protocols that are designed for connecting HTML based webpages? There was once a protocol that dominated the natural language internet: Gopher. 
+
+Repository: https://github.com/dgoldman0/gopherAI
