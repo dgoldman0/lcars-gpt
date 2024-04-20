@@ -61,26 +61,23 @@ function main() {
                         // Grab the submission form text area and submit button
                         const textarea = document.querySelector('#prompt-textarea');
                         const submitButton = document.querySelector('button[data-testid="send-button"]');
-                        textarea.value = div.getAttribute('gpt-get');
-                        // Function to mimic an event more naturally
-                        function triggerEvent(element, eventType) {
-                            const event = new Event(eventType, {
-                                bubbles: true,    // Whether the event bubbles up through the DOM
-                                cancelable: true  // Whether the event can be canceled
-                            });
-                            element.dispatchEvent(event);
-                        }
-
-                        // Dispatch events to mimic entering text and clicking the button
-                        triggerEvent(textarea, 'input');  // Mimic typing in the textarea
-                        triggerEvent(textarea, 'change'); // Mimic changing the text
-
+                        route = div.getAttribute('gpt-get').trim();
+                        target = div.getAttribute('gpt-target').trim();
                         // Make sure the button is enabled
                         submitButton.disabled = false;
-
-                        // Trigger a click event on the button
-                        triggerEvent(submitButton, 'click');
-
+                        // Set focus on text area and set the value to the route
+                        textarea.focus();
+                        textarea.value = route + " " + target.substring(1);
+                        // Simulate click on the textarea
+                        textarea.click();
+                        // Go to end of text area
+                        textarea.selectionStart = textarea.value.length;
+                        function simulateKeyPress(element, keyCode) {
+                            const keyEvent = new KeyboardEvent('keydown', { keyCode: keyCode, which: keyCode, bubbles: true });
+                            element.dispatchEvent(keyEvent);
+                        }
+                        
+                        simulateKeyPress(textarea, 13); // keyCode for Enter
                     });
                 });
 
@@ -106,51 +103,74 @@ function main() {
         }
     });
 
-    function checkForAppOrBlock() {
-      // We assume any change might affect the last message, so we check it after any mutation
-      const messages = document.querySelectorAll('div[data-message-author-role="assistant"]');
-      const lastMessage = messages[messages.length - 1];  // Get the most recent assistant message
+    function checkForAppOrBlock(find_last = false) {
+        // We assume any change might affect the last message, so we check it after any mutation
+        const messages = document.querySelectorAll('div[data-message-author-role="assistant"]');
+        let loc = messages.length - 1;
+        lastMessage = messages[loc];  // Get the most recent assistant message
+        repeat = true;
 
-        if (lastMessage) {
-          // Use a parser to decode and check HTML content
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(lastMessage.innerHTML, 'text/html');
-          const decodedHtml = doc.documentElement.textContent.trim();
-          // Check if the content starts with <!doctype html> and ends with </html> and is not the same as last processed
-          if (decodedHtml.startsWith('<!doctype html>') && decodedHtml.endsWith('</html>') && decodedHtml !== lastProcessedContent) {
-              console.log("App Validated. Loading...");
-              lastProcessedContent = decodedHtml;  // Update last processed content
+        while (lastMessage && repeat) {
+            // Use a parser to decode and check HTML content
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(lastMessage.innerHTML, 'text/html');
+            const decodedHtml = doc.documentElement.textContent.trim();
+            // Check if the content starts with <!doctype html> and ends with </html> and is not the same as last processed
+            if (decodedHtml.startsWith('<!doctype html>') && decodedHtml.endsWith('</html>') && decodedHtml !== lastProcessedContent) {
+                console.log("App Validated. Loading...");
+                lastProcessedContent = decodedHtml;  // Update last processed content
 
-              // Your function to handle valid and new content, e.g., show in overlay
-              showOverlayWithContent(decodedHtml); 
-          } else if (decodedHtml.startsWith("GPT-TARGET=") && decodedHtml.endsWith("<--END-->") && decodedHtml !== lastProcessedContent) {
-              // Extract the target which is the rest of the first line, and split the remaining as the content
-              lines = decodedHtml.split('\n');
-              const target = lines[0].substring(10);
-              const content = lines.slice(1).join('\n');
-              console.log("Block Validated. Loading...");
-              lastProcessed = decodedHtml;  // Update last processed content
+                // Your function to handle valid and new content, e.g., show in overlay
+                showOverlayWithContent(decodedHtml); 
+                repeat = false;
+            } else if (decodedHtml.startsWith("GPT-TARGET=") && decodedHtml.endsWith("<--END-->") && decodedHtml !== lastProcessedContent && !find_last) {
+                // Extract the target which is the rest of the first line, and split the remaining as the content
+                lines = lastMessage.innerHTML.split('\n');
+                const target = lines[0].substring(11);
+                const content = lines.slice(1).join('\n');
+                console.log("Block Validated. Loading...");
+                lastProcessedContent = decodedHtml;
 
-              // Inject the new block into the div with the target
-              let doc = iframe.contentDocument || iframe.contentWindow.document;
-              if (doc) {
-                // Get the div with id target
-                const targetDiv = doc.getElementById(target);
-                if (targetDiv) {
-                    targetDiv.innerHTML = content;
+                // Inject the new block into the div with the target
+                let doc = iframe.contentDocument || iframe.contentWindow.document;
+                if (doc) {
+                    // Get the div with id target
+                    console.log(target);
+                    const targetDiv = doc.getElementById(target);
+                    if (targetDiv) {
+                        targetDiv.innerHTML = content;
+                        // Make sure overlay is visible
+                        overlay.style.display = 'flex';
                     } else {
                         console.log("Block target not found.");
-                    }  
+                    }
                 }
-                // Make sure overlay is visible
-                overlay.style.display = 'flex';
-           }
+                repeat = false;
+            } else {
+                if (find_last && loc > 0) {
+                    loc = loc - 1;
+                    lastMessage = messages[loc];
+                } else {
+                    repeat = false;
+                }
+                
+            }
         }
     }
+
     const observer = new MutationObserver(mutations => {
+        first = true
         // Iterate over each mutation
         mutations.forEach(mutation => {
-          checkForAppOrBlock();
+          if (first) {
+            const messages = document.querySelectorAll('div[data-message-author-role="assistant"]');
+            if (messages.length > 0) {
+                first = false;
+                checkForAppOrBlock(true);
+            }
+          } else {
+            checkForAppOrBlock();
+          }
         });
     });
 
@@ -160,10 +180,6 @@ function main() {
 
     // Observing the body or a larger part of the document
     observer.observe(document.body, config); // You might adjust this to a specific container if possible
-
-    // Run initial check for existing app.
-    checkForAppOrBlock();
-
 }
 
 if (document.readyState === "loading") {
