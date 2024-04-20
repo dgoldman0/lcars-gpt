@@ -27,6 +27,30 @@ function main() {
 
     // Append the iframe to the overlay
     overlay.appendChild(iframe);
+    // Append a button to set the textarea as active
+    const button = document.createElement('button');
+    button.style.position = 'absolute';
+    button.style.top = '0';
+    button.style.right = '0';
+    button.style.width = '50px';
+    button.style.height = '50px';
+    button.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+    button.style.color = 'white';
+    button.style.border = 'none';
+    button.style.borderRadius = '50%';
+    button.style.fontSize = '24px';
+    button.style.cursor = 'pointer';
+    button.textContent = '🗨️'
+    button.addEventListener('click', function() {
+        const chat = document.querySelector('#prompt-textarea');
+        if (chat) {
+            // Increase the opacity of the overlay
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.1)';
+            // Set focus on the text area
+            chat.focus();
+        }
+    });
+    overlay.appendChild(button);
     // Append the overlay to the body of the document
     document.body.appendChild(overlay);
 
@@ -108,6 +132,8 @@ function main() {
 
             // Make the overlay visible
             overlay.style.display = 'flex';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+
         } else {
             console.log("Decoded HTML is invalid or incomplete.");
         }
@@ -119,10 +145,10 @@ function main() {
         overlay.style.display = 'none'; // Hide the overlay
     }
 
-    // Add a click event listener to the overlay for hiding
     overlay.addEventListener('click', function(event) {
         if (event.target === overlay) {
-            hideOverlay(); // Hide when clicking outside the iframe
+            overlay.style.display = 'flex';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
         }
     });
 
@@ -132,7 +158,7 @@ function main() {
         let loc = messages.length - 1;
         lastMessage = messages[loc];  // Get the most recent assistant message
         repeat = true;
-
+        console.log(find_last);
         while (lastMessage && repeat) {
             // Use a parser to decode and check HTML content
             const parser = new DOMParser();
@@ -164,6 +190,7 @@ function main() {
                         targetDiv.innerHTML = content;
                         // Make sure overlay is visible
                         overlay.style.display = 'flex';
+                        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
                     } else {
                         console.log("Block target not found.");
                     }
@@ -181,8 +208,8 @@ function main() {
         }
     }
 
+    first = true;
     const observer = new MutationObserver(mutations => {
-        first = true
         // Iterate over each mutation
         mutations.forEach(mutation => {
           if (first) {
