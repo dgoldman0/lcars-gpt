@@ -1,4 +1,4 @@
 So many bugs and so many things that don't work...
 
 - Seems to usually have to reload before the "app" will render.
-- Won't actually click submit so I can't even test out data injection. It likely has something to do with React and how it handles events. For now it should be possible to just manually click enter and then the app will respond, but that's obnoxious. 
+- Clearly still a lot of bugs, not really functional as an application, however finally figured out how to get the plugin to push a message!

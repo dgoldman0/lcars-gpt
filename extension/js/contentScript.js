@@ -67,17 +67,40 @@ function main() {
                         submitButton.disabled = false;
                         // Set focus on text area and set the value to the route
                         textarea.focus();
-                        textarea.value = route + " " + target.substring(1);
-                        // Simulate click on the textarea
-                        textarea.click();
-                        // Go to end of text area
-                        textarea.selectionStart = textarea.value.length;
-                        function simulateKeyPress(element, keyCode) {
-                            const keyEvent = new KeyboardEvent('keydown', { keyCode: keyCode, which: keyCode, bubbles: true });
-                            element.dispatchEvent(keyEvent);
+                        prompt = route + " " + target.substring(1);
+                        function simulateClick(targetElement) {
+                            const clickEvent = new MouseEvent('click', {
+                                view: window,
+                                bubbles: true,
+                                cancelable: true
+                            });
+                            targetElement.dispatchEvent(clickEvent);
                         }
+                        function simulateTyping(targetElement, text) {
+                            const focusEvent = new Event('focus', { bubbles: true });
+                            const inputEvent = new InputEvent('input', {
+                                inputType: 'insertText',
+                                data: text,
+                                bubbles: true,
+                                cancelable: true
+                            });
                         
-                        simulateKeyPress(textarea, 13); // keyCode for Enter
+                            targetElement.dispatchEvent(focusEvent);
+                            targetElement.value += text;  // Directly set the value if event dispatch doesn't do it
+                            targetElement.dispatchEvent(inputEvent);
+                        }
+                        function simulateEnter(targetElement) {
+                            const enterEvent = new KeyboardEvent('keydown', {
+                                key: 'Enter',
+                                keyCode: 13,
+                                code: 'Enter',
+                                bubbles: true,
+                                cancelable: true
+                            });
+                            targetElement.dispatchEvent(enterEvent);
+                        }
+                        simulateTyping(textarea, prompt);
+                        simulateEnter(textarea);                                                                       
                     });
                 });
 
@@ -124,18 +147,18 @@ function main() {
                 showOverlayWithContent(decodedHtml); 
                 repeat = false;
             } else if (decodedHtml.startsWith("GPT-TARGET=") && decodedHtml.endsWith("<--END-->") && decodedHtml !== lastProcessedContent && !find_last) {
-                // Extract the target which is the rest of the first line, and split the remaining as the content
-                lines = lastMessage.innerHTML.split('\n');
-                const target = lines[0].substring(11);
-                const content = lines.slice(1).join('\n');
-                console.log("Block Validated. Loading...");
                 lastProcessedContent = decodedHtml;
-
+               // Extract the target which should be anything preceeding the first tag, and separate it from the content
+                let target = decodedHtml.substring(11, decodedHtml.indexOf('<'));
+                console.log("Block Validated. Loading..." + target);
+                let content = decodedHtml.substring(decodedHtml.indexOf('<'), decodedHtml.length - 10);
+                // Remove the <!--END--> tag from the end of content.
+                content = content.substring(0, content.length - 10);
+                
                 // Inject the new block into the div with the target
                 let doc = iframe.contentDocument || iframe.contentWindow.document;
                 if (doc) {
                     // Get the div with id target
-                    console.log(target);
                     const targetDiv = doc.getElementById(target);
                     if (targetDiv) {
                         targetDiv.innerHTML = content;
