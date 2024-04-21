@@ -8,6 +8,8 @@ Use the following basic Star Trek Info fan LCARS App as a guideline for how this
 <html lang="en">
   <head>
     <meta charset="UTF-8">
+    <!-- Used to identify each specific LCARS app created during a single session -->
+    <meta name="appid" content="home-app-basic">
     <title>LCARS Home</title>
   </head>
   <body>
@@ -72,9 +74,8 @@ Raw output is required. No formatting, no encoding, no code blocks, nothing.
 
 In addition to handling full apps, you will have to handle data blocks. The plugin will generate a request that begins with a backslash to indicate the route, followed by the target. Responses to code blocks should always start with GPT-TARGET=[whatever the designated target is] and must end with <--END-->
 
-Example
+Examples
 
-User sends
 /query content
 
 Response
@@ -94,12 +95,9 @@ GPT-TARGET=content
 </div>
 <--END-->
 
-OR
-
 /help
 
 GPT-TARGET=container
-
 <div class="lcars-column lcars-u-5">
   <h1>Help</h1>
   <p>This LCARS interface is designed to facilitate interaction with a LCARS-styled application environment. It utilizes HTMX for dynamic web interactions without full page reloads, enhancing responsiveness and user experience consistent with the LCARS design philosophy.</p>
@@ -115,3 +113,5 @@ GPT-TARGET=container
 <--END-->
 
 Change "content" to whatever is indicated as the target.
+
+Finally, the ONLY case where you can respond directly to a user without either an app block or data block is if the user asks how to install the associated chrome extension with "Install Extension" in which case instruct the user on how to install a custom chrome extension in developer mode, where the extension is in a github repo with the specific location of the extension folder being https://github.com/dgoldman0/lcars-gpt/tree/main/extension

@@ -27,6 +27,43 @@ function main() {
 
     // Append the iframe to the overlay
     overlay.appendChild(iframe);
+    // Append two buttons on the top left corner of the overlay, one to go back and one forward.
+    const backButton = document.createElement('button');
+    backButton.style.position = 'absolute';
+    backButton.style.top = '0';
+    backButton.style.left = '0';
+    backButton.style.width = '50px';
+    backButton.style.height = '50px';
+    backButton.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+    backButton.style.color = 'white';
+    backButton.style.border = 'none';
+    backButton.style.borderRadius = '50%';
+    backButton.style.fontSize = '24px';
+    backButton.style.cursor = 'pointer';
+    backButton.textContent = '⬅️'
+    backButton.addEventListener('click', function() {
+        // Will add features for history to go back and forward later
+    });
+    overlay.appendChild(backButton);
+        
+    const forwardButton = document.createElement('button');
+    forwardButton.style.position = 'absolute';
+    forwardButton.style.top = '0';
+    forwardButton.style.left = '50px';
+    forwardButton.style.width = '50px';
+    forwardButton.style.height = '50px';
+    forwardButton.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+    forwardButton.style.color = 'white';
+    forwardButton.style.border = 'none';
+    forwardButton.style.borderRadius = '50%';
+    forwardButton.style.fontSize = '24px';
+    forwardButton.style.cursor = 'pointer';
+    forwardButton.textContent = '➡️'
+    forwardButton.addEventListener('click', function() {
+        // Will add features for history to go back and forward later
+    });
+    overlay.appendChild(forwardButton);
+
     // Append a button to set the textarea as active
     const button = document.createElement('button');
     button.style.position = 'absolute';
