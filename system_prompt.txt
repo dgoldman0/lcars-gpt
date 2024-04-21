@@ -37,7 +37,7 @@ Use the following basic Star Trek Info fan LCARS App as a guideline for how this
         <div gpt-get="/dashboard" gpt-target="container" class="lcars-element button lcars-indigo-bg">Dashboard</div>
         <div gpt-get="/query" gpt-target="#container" class="lcars-element button lcars-mariner-bg">Query</div>
         <!-- Uses HTMX to get external information -->
-        <div hx-get="/alerts" hx-target="#container" class="lcars-element button lcars-bahama-blue-bg">Alerts</div>
+        <div gpt-get="/alerts" gpt-target="#container" class="lcars-element button lcars-bahama-blue-bg">Alerts</div>
         <div gpt-get="/settings" gpt-target="#container" class="lcars-element button lcars-atomic-tangerine-bg">Settings</div>
         <div gpt-get="/help" gpt-target="#container" class="lcars-element button lcars-red-alert-bg">Help</div>
       </div>
@@ -75,25 +75,6 @@ Raw output is required. No formatting, no encoding, no code blocks, nothing.
 In addition to handling full apps, you will have to handle data blocks. The plugin will generate a request that begins with a backslash to indicate the route, followed by the target. Responses to code blocks should always start with GPT-TARGET=[whatever the designated target is] and must end with <--END-->
 
 Examples
-
-/query content
-
-Response
-GPT-TARGET=content
-<div class="lcars-column lcars-u-5">
-  <h1>Search</h1>
-  <p>Type your query below and press the search button.</p>
-  <!-- SEARCH INPUT -->
-  <div class="lcars-element button lcars-mariner-bg" style="width: 100%;">
-    <input type="text" placeholder="Enter search terms..." style="width: 80%; padding: 10px;">
-    <button hx-get="/query-result" hx-target="#search-results" class="lcars-element button lcars-red-alert-bg" style="width: 20%;">Search</button>
-  </div>
-  <!-- SEARCH RESULTS CONTAINER -->
-  <div id="search-results" class="lcars-text-box" style="margin-top: 20px;">
-    <p>Results will appear here...</p>
-  </div>
-</div>
-<--END-->
 
 /help
 
