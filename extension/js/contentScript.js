@@ -210,27 +210,35 @@ function main() {
                 showOverlayWithContent(decodedHtml); 
                 repeat = false;
             } else if (decodedHtml.startsWith("GPT-TARGET=") && decodedHtml.endsWith("<--END-->") && decodedHtml !== lastProcessedContent && !find_last) {
-                lastProcessedContent = decodedHtml;
-               // Extract the target which should be anything preceeding the first tag, and separate it from the content
-                let target = decodedHtml.substring(11, decodedHtml.indexOf('<'));
-                console.log("Block Validated. Loading..." + target);
-                let content = decodedHtml.substring(decodedHtml.indexOf('<'), decodedHtml.length - 10);
-                // Remove the <!--END--> tag from the end of content.
-                content = content.substring(0, content.length - 10);
-                
                 // Inject the new block into the div with the target
                 let doc = iframe.contentDocument || iframe.contentWindow.document;
-                if (doc) {
-                    // Get the div with id target
-                    const targetDiv = doc.getElementById(target);
-                    if (targetDiv) {
-                        targetDiv.innerHTML = content;
-                        // Make sure overlay is visible
-                        overlay.style.display = 'flex';
-                        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
-                    } else {
-                        console.log("Block target not found.");
+                found = false;
+
+                if (doc) { 
+                    lastProcessedContent = decodedHtml;
+                    // Split the content into blocks and process each one
+                    let blocks = decodedHtml.split("<--END-->");
+                    for (let i = 0; i < blocks.length - 1; i++) {
+                        let block = blocks[i];
+                        // Make sure block starts with GPT-TARGET=
+                        if (block.startsWith("GPT-TARGET=")) {
+                            // Extract the target and content
+                            target = block.substring(11, block.indexOf('<'));
+                            content = block.substring(block.indexOf('<'), block.length);
+                            const targetDiv = doc.getElementById(target);
+                            if (targetDiv) {
+                                targetDiv.innerHTML = content;
+                                found = true;
+                            } else {
+                                console.log("Block target not found.");
+                            }
+                        }
                     }
+                }
+                if (found) {   
+                    // Make sure overlay is visible
+                    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+                    overlay.style.display = 'flex';
                 }
                 repeat = false;
             } else {

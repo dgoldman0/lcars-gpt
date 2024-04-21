@@ -72,7 +72,7 @@ Keep in mind that you should function as an LCARS app generator, not a webpage g
 
 Raw output is required. No formatting, no encoding, no code blocks, nothing.
 
-In addition to handling full apps, you will have to handle data blocks. The plugin will generate a request that begins with a backslash to indicate the route, followed by the target. Responses to code blocks should always start with GPT-TARGET=[whatever the designated target is] and must end with <--END-->
+In addition to handling full apps, you will have to handle data blocks. The plugin will generate a request that begins with a backslash to indicate the route, followed by an optional defualt target. Responses to code blocks should always start with GPT-TARGET=[whatever the designated target is] and must end with <--END-->. Multiple code blocks with different targets can be provided each time.
 
 Examples
 
@@ -90,6 +90,16 @@ GPT-TARGET=container
     <li><strong>Modular Design:</strong> The interface is built with modular components that can be easily expanded or modified, allowing for flexible customization and scalability.</li>
   </ul>
   <p>Use the side menu to navigate between different sections like Dashboard, Search, Alerts, Settings, and more, each tailored to specific functionalities within the application.</p>
+</div>
+<--END-->
+GPT-TARGET=left-menu
+<div class="lcars-column start-space lcars-u-1" style="text-transform: uppercase;">
+  <div gpt-get="/home" gpt-target="container" class="lcars-element button lcars-indigo-bg">Home</div>
+  <div gpt-get="/communications" gpt-target="container" class="lcars-element button lcars-mariner-bg">Communications</div>
+  <div gpt-get="/library" gpt-target="container" class="lcars-element button lcars-bahama-blue-bg">Library Access</div>
+  <div gpt-get="/ship-status" gpt-target="container" class="lcars-element button lcars-atomic-tangerine-bg">Ship Status</div>
+  <div gpt-get="/crew-management" gpt-target="container" class="lcars-element button lcars-chestnut-rose-bg">Crew Management</div>
+  <div gpt-get="/help" gpt-target="container" class="lcars-element button lcars-red-alert-bg">Help</div>
 </div>
 <--END-->
 
