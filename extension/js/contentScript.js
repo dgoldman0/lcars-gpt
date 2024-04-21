@@ -113,6 +113,15 @@ function main() {
                 script.defer = true;
                 doc.head.appendChild(script);
 
+                // Inject font from Antonio-VariableFont_wght.ttf
+                let font = doc.createElement('style');
+                font.innerHTML = `@font-face {
+                    font-family: 'Antonio';
+                    src: url('${chrome.runtime.getURL('fonts/Antonio-VariableFont_wght.ttf')}') format('truetype');
+                    font-weight: 100 900;
+                    font-style: normal;
+                }`;
+
                 // Add an on click to all divs with gpt-get attribute
                 let divs = doc.querySelectorAll('div[gpt-get]');
                 console.log("Adding click events to " + divs.length + " divs.");
